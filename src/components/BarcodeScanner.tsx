@@ -1,54 +1,45 @@
-import React, { useRef, useState } from "react";
-import { BrowserMultiFormatReader } from "@zxing/library";
+import React from "react";
+import { useBarcodeScanner } from "../hooks/useBarcodeScanner";
 
 const BarcodeScanner: React.FC = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [code, setCode] = useState<string | null>(null);
-
-  const startScanner = async () => {
-    const codeReader = new BrowserMultiFormatReader();
-    try {
-      const devices = await codeReader.listVideoInputDevices();
-      const selectedDeviceId =
-        devices.find((device) => device.label.includes("back"))?.deviceId ||
-        devices[0]?.deviceId;
-
-      await codeReader.decodeFromVideoDevice(
-        selectedDeviceId,
-        videoRef.current!,
-        (result) => {
-          if (result) {
-            setCode(result.getText());
-            codeReader.reset();
-          }
-        }
-      );
-    } catch (error) {
-      console.error("Error initializing barcode scanner:", error);
-    }
-  };
+  const { videoRef, code, scannerActive, error, startScanner, stopScanner } =
+    useBarcodeScanner();
 
   return (
     <div className="flex flex-col items-center p-4">
       <h1 className="mb-4 text-2xl font-bold">Barcode Scanner</h1>
+      {error && (
+        <div className="text-red-500 mb-4 text-lg">
+          <strong>Error:</strong> {error}
+        </div>
+      )}
       {code ? (
-        <div className="text-center">
-          <p className="mb-4 text-lg">
+        <>
+          <p className="mb-4 text-lg break-words max-w-xs sm:max-w-md">
             Scanned Code: <strong>{code}</strong>
           </p>
           <button
             className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-            onClick={() => setCode(null)}
+            onClick={stopScanner}
           >
             Scan Again
           </button>
-        </div>
+        </>
       ) : (
         <div className="flex flex-col items-center">
           <video
             ref={videoRef}
-            className="mb-4 w-full max-w-sm rounded shadow-md"
+            className={`mb-4 w-full max-w-sm rounded shadow-md ${
+              !scannerActive ? "hidden" : ""
+            }`}
           />
+          {!scannerActive && (
+            <div className="mb-4 w-64 h-36 max-w-sm rounded flex text-center items-center shadow-md">
+              <p className="flex text-center items-center">
+                Press 'Start Scanner' button to read a barcode
+              </p>
+            </div>
+          )}
           <button
             className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
             onClick={startScanner}
