@@ -4,7 +4,7 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-gray-100">
       <h1 className="mb-8 text-4xl font-bold text-blue-500">
-        Welcome to My PWA
+        Welcome to Barcode App
       </h1>
       <Link
         to="/scanner"
