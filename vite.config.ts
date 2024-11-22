@@ -8,8 +8,8 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       manifest: {
-        name: "My PWA App",
-        short_name: "PWA App",
+        name: "BarCode App",
+        short_name: "BarCode App",
         start_url: "/",
         display: "standalone",
         background_color: "#ffffff",
